@@ -2,7 +2,7 @@
 
 module JSONPointer.Aeson where
 
-import Data.Aeson (FromJSON)
+import Data.Aeson (FromJSON, ToJSON)
 import Data.Aeson qualified as Aeson
 import Data.Aeson.Key qualified as KM
 import Data.Aeson.KeyMap qualified as KM
@@ -35,3 +35,6 @@ instance FromJSON JSONPointer where
     case parse jsonPointerUriFragment t of
       Left err -> fail $ unpack err
       Right x -> pure x
+
+instance ToJSON JSONPointer where
+  toJSON p = Aeson.toJSON $ "#" <> show p
