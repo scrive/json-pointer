@@ -2,6 +2,7 @@ module JSONPointer.Model
   ( JSONPointer
   , run
   , atIndexOrKey
+  , atKey
   )
 where
 
@@ -46,3 +47,9 @@ run (JSONPointer fn) = fn
 {-# INLINE atIndexOrKey #-}
 atIndexOrKey :: Maybe Int -> T.Text -> JSONPointer
 atIndexOrKey index key = JSONPointer $ \handler -> handler index key
+
+-- |
+-- Constructs JSON Pointer from a textual key.
+{-# INLINE atKey #-}
+atKey :: T.Text -> JSONPointer
+atKey = atIndexOrKey Nothing
