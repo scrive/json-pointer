@@ -4,6 +4,7 @@ module JSONPointer.Model
   , atIndexOrKey
   , atKey
   , escapeKey
+  , unescapeKey
   )
 where
 
@@ -60,3 +61,9 @@ atKey = atIndexOrKey Nothing
 -- See here https://datatracker.ietf.org/doc/html/rfc6901 for more details.
 escapeKey :: T.Text -> T.Text
 escapeKey = T.replace "/" "~1" . T.replace "~" "~0"
+
+-- |
+-- Unscape JSON Pointer string.
+-- See here https://datatracker.ietf.org/doc/html/rfc6901 for more details.
+unescapeKey :: T.Text -> T.Text
+unescapeKey = T.replace "~0" "~" . T.replace "~1" "/"
