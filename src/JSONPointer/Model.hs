@@ -3,6 +3,8 @@ module JSONPointer.Model
   , run
   , atIndexOrKey
   , atKey
+  , escapeKey
+  , unescapeKey
   )
 where
 
@@ -26,7 +28,7 @@ instance Monoid JSONPointer where
 
 instance Show JSONPointer where
   showsPrec _ (JSONPointer impl) =
-    appEndo $ impl (\_ text -> Endo (showString "/" . showString (T.unpack text)))
+    appEndo $ impl (\_ text -> Endo (showString "/" . showString (T.unpack $ escapeKey text)))
 
 instance Eq JSONPointer where
   a == b = show a == show b
@@ -53,3 +55,15 @@ atIndexOrKey index key = JSONPointer $ \handler -> handler index key
 {-# INLINE atKey #-}
 atKey :: T.Text -> JSONPointer
 atKey = atIndexOrKey Nothing
+
+-- |
+-- Escape JSON Pointer string.
+-- See here https://datatracker.ietf.org/doc/html/rfc6901 for more details.
+escapeKey :: T.Text -> T.Text
+escapeKey = T.replace "/" "~1" . T.replace "~" "~0"
+
+-- |
+-- Unscape JSON Pointer string.
+-- See here https://datatracker.ietf.org/doc/html/rfc6901 for more details.
+unescapeKey :: T.Text -> T.Text
+unescapeKey = T.replace "~0" "~" . T.replace "~1" "/"
