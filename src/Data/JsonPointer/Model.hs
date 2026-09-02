@@ -9,8 +9,8 @@ module Data.JsonPointer.Model
   )
 where
 
-import Data.Text qualified as T
 import Data.Semigroup
+import Data.Text qualified as T
 
 -- |
 -- A model of JsonPointer

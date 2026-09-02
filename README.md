@@ -32,6 +32,23 @@ Just (Number 1.0)
 Right /foo/0/bar
 ```
 
+## Checks
+
+```
+make check         # format-check, lint and test
+make format        # apply the formatting instead of just checking it
+```
+
+The individual checks are `make format-check` (fourmolu over `src` and `test`, cabal-fmt
+over the cabal file), `make lint` (hlint) and `make test`. `make help` lists the rest.
+
+The tools are not part of the build, install them once:
+
+```
+cabal install fourmolu cabal-fmt hlint
+```
+
+The same three checks run on every pull request, see `.github/workflows/ci.yaml`.
 
 ## Provenance
 

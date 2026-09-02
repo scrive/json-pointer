@@ -6,12 +6,12 @@ module Data.JsonPointer.Parser
   )
 where
 
+import Control.Applicative
 import Data.Attoparsec.Text
 import Data.Functor
-import Data.Semigroup ()
 import Data.Maybe ()
+import Data.Semigroup ()
 import Data.Text qualified as T
-import Control.Applicative
 
 import Data.JsonPointer.Model
 

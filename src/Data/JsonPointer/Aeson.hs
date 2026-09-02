@@ -7,9 +7,9 @@ import Data.Aeson qualified as Aeson
 import Data.Aeson.Key qualified as KM
 import Data.Aeson.KeyMap qualified as KM
 import Data.Aeson.Types (withText)
-import Data.Text (unpack)
-import Data.Semigroup
 import Data.Maybe
+import Data.Semigroup
+import Data.Text (unpack)
 import Data.Vector qualified as Vector
 
 import Data.JsonPointer.Model
