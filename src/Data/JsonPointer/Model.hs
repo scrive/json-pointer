@@ -1,7 +1,6 @@
 module Data.JsonPointer.Model
   ( JsonPointer
   , run
-  , atIndexOrKey
   , atIndex
   , atKey
   , escapeKey
@@ -9,8 +8,10 @@ module Data.JsonPointer.Model
   )
 where
 
+import Data.Bits
 import Data.Semigroup
 import Data.Text qualified as T
+import Data.Text.Read qualified as TR
 
 -- |
 -- A model of JsonPointer
@@ -31,6 +32,9 @@ instance Show JsonPointer where
   showsPrec _ (JsonPointer impl) =
     appEndo $ impl (\_ text -> Endo (showString "/" . showString (T.unpack $ escapeKey text)))
 
+-- The rendered pointer determines the reference tokens,
+-- which in turn determine the indices, hence comparing the renderings
+-- is the same as comparing the pointers.
 instance Eq JsonPointer where
   a == b = show a == show b
 
@@ -47,20 +51,36 @@ run (JsonPointer fn) = fn
 
 -- |
 -- Constructs JSON Pointer from a possible array index and a textual key.
+-- Kept private, so that an index disagreeing with the key cannot be constructed.
 {-# INLINE atIndexOrKey #-}
 atIndexOrKey :: Maybe Int -> T.Text -> JsonPointer
 atIndexOrKey index key = JsonPointer $ \handler -> handler index key
 
 -- |
--- Constructs JSON Pointer from an index
-atIndex :: Int -> JsonPointer
-atIndex index = JsonPointer $ \handler -> handler (Just index) (T.pack $ show index)
+-- The array index a reference token denotes, if any.
+--
+-- An index must not begin with a zero, as per RFC 6901,
+-- and one that does not fit into an 'Int' cannot address an array either,
+-- so both of those are plain keys.
+tokenIndex :: T.Text -> Maybe Int
+tokenIndex token
+  | T.length token > 1, T.head token == '0' = Nothing
+  | otherwise = case TR.decimal @Integer token of
+      Right (index, rest) | T.null rest -> toIntegralSized index
+      _ -> Nothing
 
 -- |
--- Constructs JSON Pointer from a textual key.
+-- Constructs JSON Pointer from an index
+atIndex :: Int -> JsonPointer
+atIndex = atKey . T.pack . show
+
+-- |
+-- Constructs JSON Pointer from a single reference token.
+-- The array index the token denotes, if any, is derived from the token itself,
+-- hence the two can never disagree.
 {-# INLINE atKey #-}
 atKey :: T.Text -> JsonPointer
-atKey = atIndexOrKey Nothing
+atKey key = atIndexOrKey (tokenIndex key) key
 
 -- |
 -- Escape JSON Pointer string.

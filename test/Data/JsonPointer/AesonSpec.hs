@@ -35,6 +35,13 @@ spec = do
     it "uses the textual key when indexing an object" $
       value (atKey "foo" <> atIndex 0) document `shouldBe` Just (String "keyed")
 
+    it "indexes into an array through a numeric key" $
+      value (atKey "list" <> atKey "0" <> atKey "x") document `shouldBe` Just (Bool True)
+
+    it "resolves pointers that compare equal alike" $
+      value (atKey "list" <> atKey "0") document
+        `shouldBe` value (atKey "list" <> atIndex 0) document
+
     it "returns Nothing for a missing key" $
       value (atKey "nope") document `shouldBe` Nothing
 

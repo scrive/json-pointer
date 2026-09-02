@@ -67,6 +67,31 @@ spec = do
     prop "agrees with the ordering of the rendered pointers" $ \(Pointer a) (Pointer b) ->
       compare a b `shouldBe` compare (show a) (show b)
 
-  describe "atKey" $
+  describe "atKey" $ do
     prop "is the escaped key prefixed with a slash" $ \(Key key) ->
       show (atKey key) `shouldBe` T.unpack ("/" <> escapeKey key)
+
+    it "derives the array index from the key" $
+      indicesOf (atKey "12") `shouldBe` [Just 12]
+
+    it "derives no index for a key with a leading zero" $
+      indicesOf (atKey "012") `shouldBe` [Nothing]
+
+    it "derives no index for a non-numeric key" $
+      indicesOf (atKey "foo") `shouldBe` [Nothing]
+
+    it "derives no index for a number that does not fit into an Int" $
+      indicesOf (atKey "18446744073709551617") `shouldBe` [Nothing]
+
+    it "keeps the key as it is given" $
+      run (atKey "a/b") (\_ key -> [key]) `shouldBe` ["a/b"]
+
+  describe "atIndex" $ do
+    it "agrees with the key it renders as" $
+      atIndex 12 `shouldBe` atKey "12"
+
+    prop "round-trips through the derived index" $ \index ->
+      indicesOf (atIndex index) `shouldBe` [if index < 0 then Nothing else Just index]
+
+indicesOf :: JsonPointer -> [Maybe Int]
+indicesOf pointer = run pointer (\index _ -> [index])

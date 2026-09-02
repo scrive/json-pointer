@@ -36,14 +36,7 @@ referenceToken :: Parser JsonPointer
 referenceToken = char '/' *> (keyToModel <$> key)
   where
     key = T.pack <$> referenceTokenChars
-    keyToModel !text = atIndexOrKey (textToIndexMaybe text) text
-    -- An array index must not begin with a zero, as per RFC 6901,
-    -- so such a reference token is a plain key.
-    textToIndexMaybe text
-      | T.length text > 1, T.head text == '0' = Nothing
-      | otherwise = either (const Nothing) Just $ parseOnly parser text
-      where
-        parser = decimal <* endOfInput
+    keyToModel !text = atKey text
 
 -- |
 -- Reference token chars as per the definition in the JSON Pointer spec.
