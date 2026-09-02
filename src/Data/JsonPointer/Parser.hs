@@ -37,7 +37,11 @@ referenceToken = char '/' *> (keyToModel <$> key)
   where
     key = T.pack <$> referenceTokenChars
     keyToModel !text = atIndexOrKey (textToIndexMaybe text) text
-    textToIndexMaybe = either (const Nothing) Just . parseOnly parser
+    -- An array index must not begin with a zero, as per RFC 6901,
+    -- so such a reference token is a plain key.
+    textToIndexMaybe text
+      | T.length text > 1, T.head text == '0' = Nothing
+      | otherwise = either (const Nothing) Just $ parseOnly parser text
       where
         parser = decimal <* endOfInput
 

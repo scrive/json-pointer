@@ -33,6 +33,15 @@ spec = do
     it "recognizes a numeric reference token as an index" $
       indicesOf <$> parseJsonPointer "/foo/12" `shouldBe` Right [Nothing, Just 12]
 
+    it "does not treat a reference token with a leading zero as an index" $
+      indicesOf <$> parseJsonPointer "/01/0002" `shouldBe` Right [Nothing, Nothing]
+
+    it "keeps a reference token with a leading zero as a key" $
+      keysOf <$> parseJsonPointer "/01" `shouldBe` Right ["01"]
+
+    it "recognizes a plain zero as an index" $
+      indicesOf <$> parseJsonPointer "/0" `shouldBe` Right [Just 0]
+
     it "rejects a pointer not starting with a slash" $
       parseJsonPointer "foo" `shouldSatisfy` isLeft
 

@@ -1,6 +1,6 @@
 cabal-version: 3.0
 name:          json-pointer
-version:       0.0.1.0
+version:       1.0.0.0
 synopsis:      JSON Pointers for Aeson
 description:   See README.md
 author:        Scrive AB

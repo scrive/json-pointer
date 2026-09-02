@@ -10,6 +10,6 @@ where
 import Data.JsonPointer.Aeson
 import Data.JsonPointer.Model
 
--- Instances only, hence no re-export in the list above.
+-- Data.JsonPointer.OpenApi holds instances only, hence it is not in the list above.
 import Data.JsonPointer.OpenApi ()
 import Data.JsonPointer.Parser
