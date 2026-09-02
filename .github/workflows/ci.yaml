@@ -56,7 +56,9 @@ jobs:
       - name: Check the cabal file formatting
         if: ${{ matrix.ghc == '9.6.7' }}
         run: |
-          cabal install --install-method=copy --overwrite-policy=always cabal-fmt-0.1.12
+          # --ignore-project, so that cabal.project.freeze does not constrain
+          # the dependencies of cabal-fmt itself.
+          cabal install --ignore-project --install-method=copy --overwrite-policy=always cabal-fmt-0.1.12
           git ls-files '*.cabal' | xargs -r "$HOME/.cabal/bin/cabal-fmt" --check
       - name: Build
         run: cabal build all
