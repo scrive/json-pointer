@@ -14,46 +14,71 @@ indicesOf pointer = run pointer (\index _ -> [index])
 
 spec :: Spec
 spec = do
-  describe "jsonPointer" $ do
+  describe "parseJsonPointer" $ do
     it "parses the empty string as the empty pointer" $
-      parse jsonPointer "" `shouldBe` Right mempty
+      parseJsonPointer "" `shouldBe` Right mempty
 
     it "parses the reference tokens" $
-      keysOf <$> parse jsonPointer "/foo/bar" `shouldBe` Right ["foo", "bar"]
+      keysOf <$> parseJsonPointer "/foo/bar" `shouldBe` Right ["foo", "bar"]
 
     it "parses an empty reference token" $
-      keysOf <$> parse jsonPointer "/" `shouldBe` Right [""]
+      keysOf <$> parseJsonPointer "/" `shouldBe` Right [""]
 
     it "unescapes ~1 into a slash" $
-      keysOf <$> parse jsonPointer "/a~1b" `shouldBe` Right ["a/b"]
+      keysOf <$> parseJsonPointer "/a~1b" `shouldBe` Right ["a/b"]
 
     it "unescapes ~0 into a tilde" $
-      keysOf <$> parse jsonPointer "/a~0b" `shouldBe` Right ["a~b"]
+      keysOf <$> parseJsonPointer "/a~0b" `shouldBe` Right ["a~b"]
 
     it "recognizes a numeric reference token as an index" $
-      indicesOf <$> parse jsonPointer "/foo/12" `shouldBe` Right [Nothing, Just 12]
+      indicesOf <$> parseJsonPointer "/foo/12" `shouldBe` Right [Nothing, Just 12]
 
     it "rejects a pointer not starting with a slash" $
-      parse jsonPointer "foo" `shouldSatisfy` isLeft
+      parseJsonPointer "foo" `shouldSatisfy` isLeft
 
     it "rejects an illegal escape sequence" $
-      parse jsonPointer "/a~2b" `shouldSatisfy` isLeft
+      parseJsonPointer "/a~2b" `shouldSatisfy` isLeft
 
     it "rejects a trailing tilde" $
-      parse jsonPointer "/a~" `shouldSatisfy` isLeft
+      parseJsonPointer "/a~" `shouldSatisfy` isLeft
 
     prop "round-trips a rendered pointer" $ \(Pointer pointer) ->
-      parse jsonPointer (T.pack (show pointer)) `shouldBe` Right pointer
+      parseJsonPointer (T.pack (show pointer)) `shouldBe` Right pointer
 
-  describe "jsonPointerUriFragment" $ do
-    it "parses a pointer behind a hash" $
-      keysOf <$> parse jsonPointerUriFragment "#/foo/bar" `shouldBe` Right ["foo", "bar"]
+    context "in the relative URI form" $ do
+      it "parses a pointer behind a hash" $
+        keysOf <$> parseJsonPointer "#/foo/bar" `shouldBe` Right ["foo", "bar"]
 
-    it "parses a bare hash as the empty pointer" $
-      parse jsonPointerUriFragment "#" `shouldBe` Right mempty
+      it "parses a bare hash as the empty pointer" $
+        parseJsonPointer "#" `shouldBe` Right mempty
 
-    it "requires the hash" $
-      parse jsonPointerUriFragment "/foo" `shouldSatisfy` isLeft
+      it "parses both forms into the same pointer" $
+        parseJsonPointer "#/foo/bar" `shouldBe` parseJsonPointer "/foo/bar"
+
+      it "accepts the hash only as the very first character" $
+        parseJsonPointer "##/foo" `shouldSatisfy` isLeft
+
+      it "treats a hash inside a reference token as a plain character" $
+        keysOf <$> parseJsonPointer "/foo#/bar" `shouldBe` Right ["foo#", "bar"]
+
+      prop "round-trips a rendered pointer behind a hash" $ \(Pointer pointer) ->
+        parseJsonPointer (T.pack ('#' : show pointer)) `shouldBe` Right pointer
+
+    context "URL-decoding" $ do
+      it "does not decode a percent-escape in the plain form" $
+        keysOf <$> parseJsonPointer "/a%20b" `shouldBe` Right ["a%20b"]
+
+      it "does not decode a percent-escape in the relative URI form" $
+        keysOf <$> parseJsonPointer "#/a%20b" `shouldBe` Right ["a%20b"]
+
+      it "does not decode a percent-escaped tilde into an escape sequence" $
+        keysOf <$> parseJsonPointer "#/a%7E1b" `shouldBe` Right ["a%7E1b"]
+
+      it "does not decode a percent-escaped slash into a separator" $
+        keysOf <$> parseJsonPointer "#/a%2Fb" `shouldBe` Right ["a%2Fb"]
+
+      it "leaves a plus sign alone" $
+        keysOf <$> parseJsonPointer "#/a+b" `shouldBe` Right ["a+b"]
 
 isLeft :: Either a b -> Bool
 isLeft = either (const True) (const False)

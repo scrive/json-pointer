@@ -1,14 +1,12 @@
 -- |
 -- Attoparsec parser.
 module Data.JsonPointer.Parser
-  ( Parser
-  , parse
-  , jsonPointer
-  , jsonPointerUriFragment
+  ( parseJsonPointer
+  , jsonPointerParser
   )
 where
 
-import Data.Attoparsec.Text hiding (parse)
+import Data.Attoparsec.Text
 import Data.Functor
 import Data.Semigroup ()
 import Data.Maybe ()
@@ -18,19 +16,23 @@ import Control.Applicative
 import Data.JsonPointer.Model
 
 -- |
--- Uses the parser to parse the input text in whole.
-parse :: Parser a -> T.Text -> Either T.Text a
-parse parser input = either (Left . T.pack) Right $ parseOnly (parser <* endOfInput) input
+-- Parses a JSON Pointer out of the input text in whole.
+parseJsonPointer :: T.Text -> Either T.Text JsonPointer
+parseJsonPointer input =
+  either (Left . T.pack) Right $ parseOnly (jsonPointerParser <* endOfInput) input
 
 -- |
--- JSON Pointer parser in the relative URI format.
-jsonPointerUriFragment :: Parser JsonPointer
-jsonPointerUriFragment = char '#' *> jsonPointer
+-- JSON Pointer parser accepting both of the forms defined by the spec:
+-- the plain one (@\/foo\/bar@) and the relative URI one (@#\/foo\/bar@).
+--
+-- No URL-decoding is performed on either form,
+-- so the percent-escapes of a pointer taken out of a URI
+-- have to be decoded by the caller beforehand.
+jsonPointerParser :: Parser JsonPointer
+jsonPointerParser = optional (char '#') *> referenceTokens
 
--- |
--- JSON Pointer parser.
-jsonPointer :: Parser JsonPointer
-jsonPointer = foldMany referenceToken
+referenceTokens :: Parser JsonPointer
+referenceTokens = foldMany referenceToken
 
 referenceToken :: Parser JsonPointer
 referenceToken = char '/' *> (keyToModel <$> key)

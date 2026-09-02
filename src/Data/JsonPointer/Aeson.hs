@@ -35,7 +35,7 @@ nullableValue pointer json = fromMaybe Aeson.Null $ value pointer json
 
 -- instance FromJSON JsonPointer where
 --   parseJSON = withText "JsonPointer" $ \t ->
---     case parse jsonPointerUriFragment t of
+--     case parseJsonPointer t of
 --       Left err -> fail $ unpack err
 --       Right x -> pure x
 
@@ -45,7 +45,7 @@ nullableValue pointer json = fromMaybe Aeson.Null $ value pointer json
 
 -- instance FromJSON JsonPointerUriFragment where
 --   parseJSON = withText "JsonPointer" $ \t ->
---     case parse jsonPointerUriFragment t of
+--     case parseJsonPointer t of
 --       Left err -> fail $ unpack err
 --       Right x -> pure x
 
