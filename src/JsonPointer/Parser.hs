@@ -1,6 +1,6 @@
 -- |
 -- Attoparsec parser.
-module JSONPointer.Parser
+module JsonPointer.Parser
   ( Parser
   , parse
   , jsonPointer
@@ -15,7 +15,7 @@ import Data.Maybe ()
 import Data.Text qualified as T
 import Control.Applicative
 
-import JSONPointer.Model
+import JsonPointer.Model
 
 -- |
 -- Uses the parser to parse the input text in whole.
@@ -24,15 +24,15 @@ parse parser input = either (Left . T.pack) Right $ parseOnly (parser <* endOfIn
 
 -- |
 -- JSON Pointer parser in the relative URI format.
-jsonPointerUriFragment :: Parser JSONPointer
+jsonPointerUriFragment :: Parser JsonPointer
 jsonPointerUriFragment = char '#' *> jsonPointer
 
 -- |
 -- JSON Pointer parser.
-jsonPointer :: Parser JSONPointer
+jsonPointer :: Parser JsonPointer
 jsonPointer = foldMany referenceToken
 
-referenceToken :: Parser JSONPointer
+referenceToken :: Parser JsonPointer
 referenceToken = char '/' *> (keyToModel <$> key)
   where
     key = T.pack <$> referenceTokenChars

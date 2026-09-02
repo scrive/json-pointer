@@ -55,9 +55,9 @@ library
 
     hs-source-dirs:  src
     exposed-modules:
-        JSONPointer.Aeson
-        JSONPointer.Model
-        JSONPointer.Parser
+        JsonPointer.Aeson
+        JsonPointer.Model
+        JsonPointer.Parser
 
     build-depends:
         , aeson
@@ -65,3 +65,4 @@ library
         , base
         , text
         , vector
+        , http-types
