@@ -10,36 +10,14 @@ copyright:     Scrive AB
 common common
   default-extensions:
     BangPatterns
-    BlockArguments
-    ConstraintKinds
-    DataKinds
-    DeriveAnyClass
-    DeriveFunctor
-    DeriveGeneric
     DerivingStrategies
-    DerivingVia
-    DuplicateRecordFields
-    FlexibleContexts
-    FlexibleInstances
-    FunctionalDependencies
     GeneralizedNewtypeDeriving
     ImportQualifiedPost
     LambdaCase
-    MultiParamTypeClasses
-    MultiWayIf
-    NamedFieldPuns
     OverloadedLabels
     OverloadedStrings
     RankNTypes
-    RecordWildCards
-    ScopedTypeVariables
-    StandaloneDeriving
-    StrictData
-    TupleSections
     TypeApplications
-    TypeFamilies
-    TypeOperators
-    UndecidableInstances
 
   default-language:   Haskell2010
   ghc-options:
