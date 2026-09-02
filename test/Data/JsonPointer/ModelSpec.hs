@@ -6,6 +6,11 @@ import Data.Text qualified as T
 import Test.Hspec
 import Test.Hspec.QuickCheck
 
+-- The monoid law properties below are the point of these tests.
+{-# ANN module ("HLint: ignore Monoid law, left identity" :: String) #-}
+
+{-# ANN module ("HLint: ignore Monoid law, right identity" :: String) #-}
+
 spec :: Spec
 spec = do
   describe "escapeKey" $ do
