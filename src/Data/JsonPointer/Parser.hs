@@ -44,13 +44,13 @@ referenceToken = char '/' *> (keyToModel <$> key)
 -- |
 -- Reference token chars as per the definition in the JSON Pointer spec.
 referenceTokenChars :: Parser [Char]
-referenceTokenChars = many $ escapeSequence <|> notChar '/'
+referenceTokenChars = many $ escapeSequence <|> unescapedChar
   where
-    escapeSequence = char '~' *> (tilde <|> slash <|> other)
+    unescapedChar = satisfy $ \c -> c /= '/' && c /= '~'
+    escapeSequence = char '~' *> (tilde <|> slash)
       where
         tilde = char '0' $> '~'
         slash = char '1' $> '/'
-        other = fail "Illegal escape sequence"
 
 foldMany :: (Alternative m, Monoid a) => m a -> m a
 foldMany consume = step <|> end

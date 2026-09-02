@@ -19,9 +19,11 @@ import Data.JsonPointer.Model
 -- |
 -- Converts JsonPointer into an Aeson Value lookup function.
 value :: JsonPointer -> Aeson.Value -> Maybe Aeson.Value
-value pointer json = appEndo (run pointer interpreter) $ Just json
+value pointer json = appEndo (getDual (run pointer interpreter)) $ Just json
   where
-    interpreter index key = Endo (lookup' =<<)
+    -- 'Dual' is what makes the reference tokens apply left to right:
+    -- the 'Semigroup' of 'Endo' is function composition.
+    interpreter index key = Dual $ Endo (lookup' =<<)
       where
         lookup' = \case
           Aeson.Object x -> KM.lookup (KM.fromText key) x

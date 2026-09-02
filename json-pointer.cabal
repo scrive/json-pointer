@@ -7,7 +7,7 @@ author:        Scrive AB
 maintainer:    Scrive AB
 copyright:     Scrive AB
 
-library
+common common
     default-extensions:
         BangPatterns
         BlockArguments
@@ -53,6 +53,8 @@ library
         -Wno-missing-kind-signatures
         -Wprepositive-qualified-module
 
+library
+    import:          common
     hs-source-dirs:  src
     exposed-modules:
         Data.JsonPointer
@@ -67,3 +69,23 @@ library
         , text
         , vector
         -- , http-types
+
+test-suite spec
+    import:             common
+    type:               exitcode-stdio-1.0
+    hs-source-dirs:     test
+    main-is:            Spec.hs
+    other-modules:
+        Data.JsonPointer.AesonSpec
+        Data.JsonPointer.Gen
+        Data.JsonPointer.ModelSpec
+        Data.JsonPointer.ParserSpec
+
+    build-tool-depends: hspec-discover:hspec-discover
+    build-depends:
+        , QuickCheck
+        , aeson
+        , base
+        , hspec
+        , json-pointer
+        , text
