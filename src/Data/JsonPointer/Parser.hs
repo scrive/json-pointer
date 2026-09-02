@@ -16,18 +16,16 @@ import Control.Applicative
 import Data.JsonPointer.Model
 
 -- |
--- Parses a JSON Pointer out of the input text in whole.
-parseJsonPointer :: T.Text -> Either T.Text JsonPointer
-parseJsonPointer input =
-  either (Left . T.pack) Right $ parseOnly (jsonPointerParser <* endOfInput) input
-
--- |
--- JSON Pointer parser accepting both of the forms defined by the spec:
+-- Parse JSON Pointer accepting both of the forms defined by the spec:
 -- the plain one (@\/foo\/bar@) and the relative URI one (@#\/foo\/bar@).
 --
 -- No URL-decoding is performed on either form,
 -- so the percent-escapes of a pointer taken out of a URI
 -- have to be decoded by the caller beforehand.
+parseJsonPointer :: T.Text -> Either T.Text JsonPointer
+parseJsonPointer input =
+  either (Left . T.pack) Right $ parseOnly (jsonPointerParser <* endOfInput) input
+
 jsonPointerParser :: Parser JsonPointer
 jsonPointerParser = optional (char '#') *> referenceTokens
 

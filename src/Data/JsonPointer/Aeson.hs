@@ -2,19 +2,18 @@
 
 module Data.JsonPointer.Aeson where
 
--- import Data.Aeson (FromJSON, ToJSON)
+import Data.Aeson (FromJSON (..), ToJSON (..))
 import Data.Aeson qualified as Aeson
 import Data.Aeson.Key qualified as KM
 import Data.Aeson.KeyMap qualified as KM
--- import Data.Aeson.Types (withText)
--- import Data.Text (unpack)
+import Data.Aeson.Types (withText)
+import Data.Text (unpack)
 import Data.Semigroup
 import Data.Maybe
 import Data.Vector qualified as Vector
--- import Network.HTTP.Types.URI
 
 import Data.JsonPointer.Model
--- import Data.JsonPointer.Parser
+import Data.JsonPointer.Parser
 
 -- |
 -- Converts JsonPointer into an Aeson Value lookup function.
@@ -33,28 +32,16 @@ value pointer json = appEndo (getDual (run pointer interpreter)) $ Just json
 nullableValue :: JsonPointer -> Aeson.Value -> Aeson.Value
 nullableValue pointer json = fromMaybe Aeson.Null $ value pointer json
 
--- instance FromJSON JsonPointer where
---   parseJSON = withText "JsonPointer" $ \t ->
---     case parseJsonPointer t of
---       Left err -> fail $ unpack err
---       Right x -> pure x
+-- |
+-- Parses both the plain and the relative URI form.
+-- See 'parseJsonPointer' for the details.
+instance FromJSON JsonPointer where
+  parseJSON = withText "JsonPointer" $ \t ->
+    case parseJsonPointer t of
+      Left err -> fail $ unpack err
+      Right x -> pure x
 
--- instance ToJSON JsonPointer where
---   toJSON p = Aeson.toJSON $ show p
-
-
--- instance FromJSON JsonPointerUriFragment where
---   parseJSON = withText "JsonPointer" $ \t ->
---     case parseJsonPointer t of
---       Left err -> fail $ unpack err
---       Right x -> pure x
-
--- instance ToJSON JsonPointerUriFragment where
---   toJSON p = Aeson.toJSON $ show p
-
-
--- newtype JsonPointerUriFragment = JsonPointerUriFragment JsonPointer
-
--- instance Show JsonPointerUriFragment where
---   showsPrec _ (JsonPointerUriFragment p) = "#" <> show p
-
+-- |
+-- Renders the plain form, e.g., @\/foo\/bar@.
+instance ToJSON JsonPointer where
+  toJSON p = Aeson.toJSON $ show p

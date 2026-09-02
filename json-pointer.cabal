@@ -60,15 +60,17 @@ library
         Data.JsonPointer
         Data.JsonPointer.Aeson
         Data.JsonPointer.Model
+        Data.JsonPointer.OpenApi
         Data.JsonPointer.Parser
 
     build-depends:
         , aeson
         , attoparsec
         , base
+        , openapi3
+        , optics-core
         , text
         , vector
-        -- , http-types
 
 test-suite spec
     import:             common

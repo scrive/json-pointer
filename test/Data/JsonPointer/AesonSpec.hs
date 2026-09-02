@@ -1,8 +1,10 @@
 module Data.JsonPointer.AesonSpec (spec) where
 
-import Data.Aeson (Value (..), object, (.=))
+import Data.Aeson (Result (..), Value (..), fromJSON, object, toJSON, (.=))
 import Data.JsonPointer
+import Data.JsonPointer.Gen
 import Test.Hspec
+import Test.Hspec.QuickCheck
 
 document :: Value
 document =
@@ -54,3 +56,37 @@ spec = do
 
     it "returns Null on a miss" $
       nullableValue (atKey "nope") document `shouldBe` Null
+
+  describe "ToJSON" $ do
+    it "renders the plain form" $
+      toJSON (atKey "foo" <> atIndex 0) `shouldBe` String "/foo/0"
+
+    it "renders the empty pointer as the empty string" $
+      toJSON (mempty @JsonPointer) `shouldBe` String ""
+
+    it "escapes the reference tokens" $
+      toJSON (atKey "a/b") `shouldBe` String "/a~1b"
+
+  describe "FromJSON" $ do
+    it "parses the plain form" $
+      fromJSON (String "/foo/0") `shouldBe` Success (atKey "foo" <> atIndex 0)
+
+    it "parses the relative URI form" $
+      fromJSON (String "#/foo/0") `shouldBe` Success (atKey "foo" <> atIndex 0)
+
+    it "does not URL-decode" $
+      fromJSON (String "#/a%2Fb") `shouldBe` Success (atKey "a%2Fb")
+
+    it "fails on an illegal escape sequence" $
+      fromJSON @JsonPointer (String "/a~2b") `shouldSatisfy` isError
+
+    it "fails on a non-string" $
+      fromJSON @JsonPointer (Number 1) `shouldSatisfy` isError
+
+    prop "round-trips a pointer through ToJSON" $ \(Pointer pointer) ->
+      fromJSON (toJSON pointer) `shouldBe` Success pointer
+
+isError :: Result a -> Bool
+isError = \case
+  Error _ -> True
+  Success _ -> False
