@@ -65,4 +65,4 @@ library
         , base
         , text
         , vector
-        , http-types
+        -- , http-types

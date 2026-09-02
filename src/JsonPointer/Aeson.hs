@@ -11,6 +11,7 @@ import Data.Text (unpack)
 import Data.Semigroup
 import Data.Maybe
 import Data.Vector qualified as Vector
+-- import Network.HTTP.Types.URI
 
 import JsonPointer.Model
 import JsonPointer.Parser
@@ -40,11 +41,18 @@ instance ToJSON JsonPointer where
   toJSON p = Aeson.toJSON $ show p
 
 
-instance FromJSON JsonPointerUriFragment where
-  parseJSON = withText "JsonPointer" $ \t ->
-    case parse jsonPointerUriFragment t of
-      Left err -> fail $ unpack err
-      Right x -> pure x
+-- instance FromJSON JsonPointerUriFragment where
+--   parseJSON = withText "JsonPointer" $ \t ->
+--     case parse jsonPointerUriFragment t of
+--       Left err -> fail $ unpack err
+--       Right x -> pure x
 
-instance ToJSON JsonPointerUriFragment where
-  toJSON p = Aeson.toJSON $ show p
+-- instance ToJSON JsonPointerUriFragment where
+--   toJSON p = Aeson.toJSON $ show p
+
+
+-- newtype JsonPointerUriFragment = JsonPointerUriFragment JsonPointer
+
+-- instance Show JsonPointerUriFragment where
+--   showsPrec _ (JsonPointerUriFragment p) = "#" <> show p
+

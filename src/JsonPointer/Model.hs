@@ -1,6 +1,5 @@
 module JsonPointer.Model
   ( JsonPointer
-  , JsonPointerUriFragment
   , run
   , atIndexOrKey
   , atIndex
@@ -12,18 +11,12 @@ where
 
 import Data.Text qualified as T
 import Data.Semigroup
-import Network.HTTP.Types.URI
 
 -- |
 -- A model of JsonPointer
 -- represented in terms of a monoid.
 newtype JsonPointer
   = JsonPointer (forall m. Monoid m => (Maybe Int -> T.Text -> m) -> m)
-
-newtype JsonPointerUriFragment = JsonPointerUriFragment JsonPointer
-
-instance Show JsonPointerUriFragment where
-  showsPrec _ (JsonPointerUriFragment p) = "#" <> show p
 
 instance Semigroup JsonPointer where
   {-# INLINE (<>) #-}
@@ -61,7 +54,7 @@ atIndexOrKey index key = JsonPointer $ \handler -> handler index key
 -- |
 -- Constructs JSON Pointer from an index
 atIndex :: Int -> JsonPointer
-atIndex index = JsonPointer $ \handler -> handler (Just index) (showt index)
+atIndex index = JsonPointer $ \handler -> handler (Just index) (T.pack $ show index)
 
 -- |
 -- Constructs JSON Pointer from a textual key.
