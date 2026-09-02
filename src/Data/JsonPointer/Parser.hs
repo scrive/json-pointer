@@ -1,6 +1,6 @@
 -- |
 -- Attoparsec parser.
-module JsonPointer.Parser
+module Data.JsonPointer.Parser
   ( Parser
   , parse
   , jsonPointer
@@ -15,7 +15,7 @@ import Data.Maybe ()
 import Data.Text qualified as T
 import Control.Applicative
 
-import JsonPointer.Model
+import Data.JsonPointer.Model
 
 -- |
 -- Uses the parser to parse the input text in whole.

@@ -1,4 +1,4 @@
-module JsonPointer.Model
+module Data.JsonPointer.Model
   ( JsonPointer
   , run
   , atIndexOrKey

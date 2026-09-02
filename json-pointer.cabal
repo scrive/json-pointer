@@ -55,9 +55,10 @@ library
 
     hs-source-dirs:  src
     exposed-modules:
-        JsonPointer.Aeson
-        JsonPointer.Model
-        JsonPointer.Parser
+        Data.JsonPointer
+        Data.JsonPointer.Aeson
+        Data.JsonPointer.Model
+        Data.JsonPointer.Parser
 
     build-depends:
         , aeson

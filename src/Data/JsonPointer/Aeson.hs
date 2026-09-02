@@ -1,20 +1,20 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 
-module JsonPointer.Aeson where
+module Data.JsonPointer.Aeson where
 
-import Data.Aeson (FromJSON, ToJSON)
+-- import Data.Aeson (FromJSON, ToJSON)
 import Data.Aeson qualified as Aeson
 import Data.Aeson.Key qualified as KM
 import Data.Aeson.KeyMap qualified as KM
-import Data.Aeson.Types (withText)
-import Data.Text (unpack)
+-- import Data.Aeson.Types (withText)
+-- import Data.Text (unpack)
 import Data.Semigroup
 import Data.Maybe
 import Data.Vector qualified as Vector
 -- import Network.HTTP.Types.URI
 
-import JsonPointer.Model
-import JsonPointer.Parser
+import Data.JsonPointer.Model
+-- import Data.JsonPointer.Parser
 
 -- |
 -- Converts JsonPointer into an Aeson Value lookup function.
@@ -31,14 +31,14 @@ value pointer json = appEndo (run pointer interpreter) $ Just json
 nullableValue :: JsonPointer -> Aeson.Value -> Aeson.Value
 nullableValue pointer json = fromMaybe Aeson.Null $ value pointer json
 
-instance FromJSON JsonPointer where
-  parseJSON = withText "JsonPointer" $ \t ->
-    case parse jsonPointerUriFragment t of
-      Left err -> fail $ unpack err
-      Right x -> pure x
+-- instance FromJSON JsonPointer where
+--   parseJSON = withText "JsonPointer" $ \t ->
+--     case parse jsonPointerUriFragment t of
+--       Left err -> fail $ unpack err
+--       Right x -> pure x
 
-instance ToJSON JsonPointer where
-  toJSON p = Aeson.toJSON $ show p
+-- instance ToJSON JsonPointer where
+--   toJSON p = Aeson.toJSON $ show p
 
 
 -- instance FromJSON JsonPointerUriFragment where
