@@ -60,24 +60,22 @@ tokenIndex token
       Right (index, rest) | T.null rest -> toIntegralSized index
       _ -> Nothing
 
--- | Construct JSON Pointer from an index
+-- | Construct JSON Pointer from an index.
 atIndex :: Int -> JsonPointer
 atIndex = atKey . T.pack . show
 
 -- | Construct a JsonPointer from a single reference token.
---
--- If the key is a number, it can index into an array, as well as an object.
 {-# INLINE atKey #-}
 atKey :: T.Text -> JsonPointer
 atKey key = JsonPointer $ \handler -> handler (tokenIndex key) key
 
--- | Escape JSON Pointer string
+-- | Escape JSON Pointer string.
 --
 -- See here https://datatracker.ietf.org/doc/html/rfc6901 for more details.
 escapeKey :: T.Text -> T.Text
 escapeKey = T.replace "/" "~1" . T.replace "~" "~0"
 
--- | Unscape JSON Pointer string
+-- | Unscape JSON Pointer string.
 --
 -- See here https://datatracker.ietf.org/doc/html/rfc6901 for more details.
 unescapeKey :: T.Text -> T.Text

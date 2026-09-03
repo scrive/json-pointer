@@ -15,7 +15,7 @@ import Data.Vector qualified as Vector
 import Data.JsonPointer.Model
 import Data.JsonPointer.Parser
 
--- | Convert JsonPointer into an Aeson Value lookup function.
+-- | Extract a pointed sub-value.
 pointTo :: JsonPointer -> Aeson.Value -> Maybe Aeson.Value
 pointTo pointer json = appEndo (getDual (run pointer interpreter)) $ Just json
   where
@@ -28,7 +28,7 @@ pointTo pointer json = appEndo (getDual (run pointer interpreter)) $ Just json
           Aeson.Array x -> (Vector.!?) x =<< index
           _ -> Nothing
 
--- | Like 'pointTo', but returns 'Aeson.Null' if the pointer does not resolve
+-- | Like 'pointTo', but returns 'Aeson.Null' if the pointer does not resolve.
 pointToNullable :: JsonPointer -> Aeson.Value -> Aeson.Value
 pointToNullable pointer json = fromMaybe Aeson.Null $ pointTo pointer json
 
@@ -41,6 +41,6 @@ instance FromJSON JsonPointer where
       Left err -> fail $ unpack err
       Right x -> pure x
 
--- | Render the plain form, e.g., "/foo/bar".
+-- | Render the plain form, e.g., @\/foo\/bar@
 instance ToJSON JsonPointer where
   toJSON p = Aeson.toJSON $ show p

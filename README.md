@@ -15,6 +15,8 @@ Printer always produces the plain form.
 
 ## Example
 
+You can use `make repl` to start a REPL with the library loaded.
+
 ```haskell
 >>> import Data.Aeson
 >>> import Data.JsonPointer

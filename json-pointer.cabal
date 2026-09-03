@@ -14,7 +14,6 @@ common common
     GeneralizedNewtypeDeriving
     ImportQualifiedPost
     LambdaCase
-    OverloadedLabels
     OverloadedStrings
     RankNTypes
     TypeApplications
@@ -44,7 +43,6 @@ library
     , attoparsec
     , base
     , openapi3
-    , optics-core
     , text
     , vector
 
