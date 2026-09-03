@@ -6,7 +6,7 @@ module Data.JsonPointer.Gen
   )
 where
 
-import Data.JsonPointer.Model
+import Data.JsonPointer
 import Data.Text qualified as T
 import Test.QuickCheck
 
@@ -28,7 +28,7 @@ newtype Pointer = Pointer JsonPointer
 instance Arbitrary Pointer where
   arbitrary = fromKeys <$> arbitrary
   shrink (Pointer pointer) =
-    fromKeys <$> shrink (run pointer (\_ key -> [Key key]))
+    fromKeys <$> shrink (runPointer pointer (\_ key -> [Key key]))
 
 fromKeys :: [Key] -> Pointer
 fromKeys = Pointer . foldMap (\(Key key) -> atKey key)

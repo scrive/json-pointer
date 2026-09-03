@@ -17,7 +17,7 @@ import Data.JsonPointer.Parser
 
 -- | Extract a pointed sub-value.
 pointTo :: JsonPointer -> Aeson.Value -> Maybe Aeson.Value
-pointTo pointer json = appEndo (getDual (run pointer interpreter)) $ Just json
+pointTo pointer json = appEndo (getDual (runPointer pointer interpreter)) $ Just json
   where
     -- 'Dual' is what makes the reference tokens apply left to right:
     -- the 'Semigroup' of 'Endo' is function composition.

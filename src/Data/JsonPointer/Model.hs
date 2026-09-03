@@ -1,6 +1,6 @@
 module Data.JsonPointer.Model
   ( JsonPointer
-  , run
+  , runPointer
   , atIndex
   , atKey
   , escapeKey
@@ -44,9 +44,9 @@ instance Ord JsonPointer where
 -- | Given a JsonPointer and a function,
 -- which interprets a possible index or a textual key into a monoid,
 -- return the result of applying the function to the pointer.
-{-# INLINE run #-}
-run :: Monoid m => JsonPointer -> (Maybe Int -> T.Text -> m) -> m
-run (JsonPointer fn) = fn
+{-# INLINE runPointer #-}
+runPointer :: Monoid m => JsonPointer -> (Maybe Int -> T.Text -> m) -> m
+runPointer (JsonPointer fn) = fn
 
 -- | The array index a reference token denotes, if any.
 --

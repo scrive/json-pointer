@@ -1,5 +1,6 @@
 module Data.JsonPointer
   ( JsonPointer
+  , runPointer
   , atIndex
   , atKey
   , parseJsonPointer

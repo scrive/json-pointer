@@ -56,12 +56,12 @@ spec = do
     prop "associativity" $ \(Pointer a) (Pointer b) (Pointer c) ->
       (a <> b) <> c `shouldBe` a <> (b <> c)
 
-  describe "run" $ do
+  describe "runPointer" $ do
     it "hands over the keys in order" $
-      run (atKey "foo" <> atIndex 3) (\_ key -> [key]) `shouldBe` ["foo", "3"]
+      runPointer (atKey "foo" <> atIndex 3) (\_ key -> [key]) `shouldBe` ["foo", "3"]
 
     it "hands over an index only for a numeric reference token" $
-      run (atKey "foo" <> atIndex 3) (\index _ -> [index]) `shouldBe` [Nothing, Just 3]
+      runPointer (atKey "foo" <> atIndex 3) (\index _ -> [index]) `shouldBe` [Nothing, Just 3]
 
   describe "Ord" $
     prop "agrees with the ordering of the rendered pointers" $ \(Pointer a) (Pointer b) ->
@@ -84,7 +84,7 @@ spec = do
       indicesOf (atKey "18446744073709551617") `shouldBe` [Nothing]
 
     it "keeps the key as it is given" $
-      run (atKey "a/b") (\_ key -> [key]) `shouldBe` ["a/b"]
+      runPointer (atKey "a/b") (\_ key -> [key]) `shouldBe` ["a/b"]
 
   describe "atIndex" $ do
     it "agrees with the key it renders as" $
@@ -94,4 +94,4 @@ spec = do
       indicesOf (atIndex index) `shouldBe` [if index < 0 then Nothing else Just index]
 
 indicesOf :: JsonPointer -> [Maybe Int]
-indicesOf pointer = run pointer (\index _ -> [index])
+indicesOf pointer = runPointer pointer (\index _ -> [index])

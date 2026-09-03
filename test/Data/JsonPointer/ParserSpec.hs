@@ -1,17 +1,16 @@
 module Data.JsonPointer.ParserSpec (spec) where
 
+import Data.JsonPointer
 import Data.JsonPointer.Gen
-import Data.JsonPointer.Model
-import Data.JsonPointer.Parser
 import Data.Text qualified as T
 import Test.Hspec
 import Test.Hspec.QuickCheck
 
 keysOf :: JsonPointer -> [T.Text]
-keysOf pointer = run pointer (\_ key -> [key])
+keysOf pointer = runPointer pointer (\_ key -> [key])
 
 indicesOf :: JsonPointer -> [Maybe Int]
-indicesOf pointer = run pointer (\index _ -> [index])
+indicesOf pointer = runPointer pointer (\index _ -> [index])
 
 spec :: Spec
 spec = do
