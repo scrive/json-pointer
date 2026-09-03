@@ -2,14 +2,14 @@
 
 module Data.JsonPointer.Aeson where
 
-import Data.Aeson (FromJSON (..), ToJSON (..))
+import Data.Aeson (FromJSON (..), FromJSONKey (..), FromJSONKeyFunction (..), ToJSON (..), ToJSONKey (..))
 import Data.Aeson qualified as Aeson
 import Data.Aeson.Key qualified as KM
 import Data.Aeson.KeyMap qualified as KM
-import Data.Aeson.Types (withText)
+import Data.Aeson.Types (toJSONKeyText, withText)
 import Data.Maybe
 import Data.Semigroup
-import Data.Text (unpack)
+import Data.Text (pack, unpack)
 import Data.Vector qualified as Vector
 
 import Data.JsonPointer.Model
@@ -36,11 +36,18 @@ pointToNullable pointer json = fromMaybe Aeson.Null $ pointTo pointer json
 --
 -- See `parseJsonPointer` for the details.
 instance FromJSON JsonPointer where
-  parseJSON = withText "JsonPointer" $ \t ->
-    case parseJsonPointer t of
-      Left err -> fail $ unpack err
-      Right x -> pure x
+  parseJSON = withText "JsonPointer" $ either (fail . unpack) pure . parseJsonPointer
+
+-- | Parse both the plain and the relative URI form.
+--
+-- See `parseJsonPointer` for the details.
+instance FromJSONKey JsonPointer where
+  fromJSONKey = FromJSONKeyTextParser $ either (fail . unpack) pure . parseJsonPointer
 
 -- | Render the plain form, e.g., @\/foo\/bar@
 instance ToJSON JsonPointer where
   toJSON p = Aeson.toJSON $ show p
+
+-- | Render the plain form, e.g., @\/foo\/bar@
+instance ToJSONKey JsonPointer where
+  toJSONKey = toJSONKeyText $ pack . show

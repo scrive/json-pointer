@@ -3,6 +3,7 @@ module Data.JsonPointer.AesonSpec (spec) where
 import Data.Aeson (Result (..), Value (..), fromJSON, object, toJSON, (.=))
 import Data.JsonPointer
 import Data.JsonPointer.Gen
+import Data.Map.Strict qualified as Map
 import Test.Hspec
 import Test.Hspec.QuickCheck
 
@@ -11,7 +12,7 @@ document =
   object
     [ "foo" .= object ["bar" .= (1 :: Int), "0" .= ("keyed" :: String), "-1" .= ("negative" :: String)]
     , "list" .= [object ["x" .= True], Null]
-    , "empty" .= object ["" .= ("blank" :: String)]
+    , "" .= ("blank" :: String)
     ]
 
 spec :: Spec
@@ -27,7 +28,7 @@ spec = do
       pointTo (atKey "list" <> atIndex 0 <> atKey "x") document `shouldBe` Just (Bool True)
 
     it "looks up an empty key" $
-      pointTo (atKey "empty" <> atKey "") document `shouldBe` Just (String "blank")
+      pointTo (atKey "") document `shouldBe` Just (String "blank")
 
     it "returns a null stored in the document" $
       pointTo (atKey "list" <> atIndex 1) document `shouldBe` Just Null
@@ -80,6 +81,19 @@ spec = do
     it "escapes the reference tokens" $
       toJSON (atKey "a/b") `shouldBe` String "/a~1b"
 
+  describe "ToJSONKey" $ do
+    it "renders the plain form as an object key" $
+      toJSON (Map.singleton (atKey "foo" <> atIndex 0) (1 :: Int))
+        `shouldBe` object ["/foo/0" .= (1 :: Int)]
+
+    it "renders the empty pointer as the empty key" $
+      toJSON (Map.singleton (mempty @JsonPointer) (1 :: Int))
+        `shouldBe` object ["" .= (1 :: Int)]
+
+    it "escapes the reference tokens" $
+      toJSON (Map.singleton (atKey "a/b") (1 :: Int))
+        `shouldBe` object ["/a~1b" .= (1 :: Int)]
+
   describe "FromJSON" $ do
     it "parses the plain form" $
       fromJSON (String "/foo/0") `shouldBe` Success (atKey "foo" <> atIndex 0)
@@ -98,6 +112,27 @@ spec = do
 
     prop "round-trips a pointer through ToJSON" $ \(Pointer pointer) ->
       fromJSON (toJSON pointer) `shouldBe` Success pointer
+
+  describe "FromJSONKey" $ do
+    it "parses the plain form from an object key" $
+      fromJSON (object ["/foo/0" .= (1 :: Int)])
+        `shouldBe` Success (Map.singleton (atKey "foo" <> atIndex 0) (1 :: Int))
+
+    it "parses the relative URI form from an object key" $
+      fromJSON (object ["#/foo/0" .= (1 :: Int)])
+        `shouldBe` Success (Map.singleton (atKey "foo" <> atIndex 0) (1 :: Int))
+
+    it "parses the empty key as the empty pointer" $
+      fromJSON (object ["" .= (1 :: Int)])
+        `shouldBe` Success (Map.singleton (mempty @JsonPointer) (1 :: Int))
+
+    it "fails on an illegal escape sequence" $
+      fromJSON @(Map.Map JsonPointer Int) (object ["/a~2b" .= (1 :: Int)])
+        `shouldSatisfy` isError
+
+    prop "round-trips a pointer through ToJSONKey" $ \(Pointer pointer) ->
+      fromJSON (toJSON (Map.singleton pointer (1 :: Int)))
+        `shouldBe` Success (Map.singleton pointer (1 :: Int))
 
 isError :: Result a -> Bool
 isError = \case
