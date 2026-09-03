@@ -6,7 +6,7 @@ module Data.JsonPointer.Gen
   )
 where
 
-import Data.JsonPointer
+import Data.JsonPointer.Model
 import Data.Text qualified as T
 import Test.QuickCheck
 

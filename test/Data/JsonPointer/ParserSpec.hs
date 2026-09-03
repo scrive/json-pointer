@@ -1,7 +1,8 @@
 module Data.JsonPointer.ParserSpec (spec) where
 
-import Data.JsonPointer
 import Data.JsonPointer.Gen
+import Data.JsonPointer.Model
+import Data.JsonPointer.Parser
 import Data.Text qualified as T
 import Test.Hspec
 import Test.Hspec.QuickCheck

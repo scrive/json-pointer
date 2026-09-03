@@ -1,7 +1,7 @@
 module Data.JsonPointer.ModelSpec (spec) where
 
-import Data.JsonPointer
 import Data.JsonPointer.Gen
+import Data.JsonPointer.Model
 import Data.Text qualified as T
 import Test.Hspec
 import Test.Hspec.QuickCheck

@@ -22,7 +22,7 @@ Printer always produces the plain form.
 >>> let doc = object ["foo" .= [object ["bar" .= (1 :: Int)]]]
 >>> let pointer = atKey "foo" <> atIndex 0 <> atKey "bar"
 
->>> value pointer doc
+>>> pointTo pointer doc
 Just (Number 1.0)
 
 >>> show pointer

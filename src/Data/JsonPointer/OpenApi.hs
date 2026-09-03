@@ -1,8 +1,6 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 
--- |
--- OpenAPI schema of the JSON representation
--- provided by "Data.JsonPointer.Aeson".
+-- | OpenAPI schema of the JSON representation provided by "Data.JsonPointer.Aeson"
 module Data.JsonPointer.OpenApi () where
 
 import Data.Aeson qualified as Aeson

@@ -1,5 +1,4 @@
--- |
--- Attoparsec parser.
+-- | Attoparsec parser
 module Data.JsonPointer.Parser
   ( parseJsonPointer
   , jsonPointerParser
@@ -15,8 +14,7 @@ import Data.Text qualified as T
 
 import Data.JsonPointer.Model
 
--- |
--- Parse JSON Pointer accepting both of the forms defined by the spec:
+-- | Parse JSON Pointer accepting both of the forms defined by the spec:
 -- the plain one (@\/foo\/bar@) and the relative URI one (@#\/foo\/bar@).
 --
 -- No URL-decoding is performed on either form,
@@ -33,10 +31,7 @@ referenceTokens :: Parser JsonPointer
 referenceTokens = foldMany referenceToken
 
 referenceToken :: Parser JsonPointer
-referenceToken = char '/' *> (keyToModel <$> key)
-  where
-    key = T.pack <$> referenceTokenChars
-    keyToModel !text = atKey text
+referenceToken = char '/' *> (atKey . T.pack <$> referenceTokenChars)
 
 -- |
 -- Reference token chars as per the definition in the JSON Pointer spec.
