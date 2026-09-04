@@ -1,67 +1,68 @@
 cabal-version: 3.0
 name:          json-pointer
-version:       0.0.1.0
+version:       1.0.0.0
 synopsis:      JSON Pointers for Aeson
 description:   See README.md
 author:        Scrive AB
 maintainer:    Scrive AB
 copyright:     Scrive AB
 
+common common
+  default-extensions:
+    BangPatterns
+    DerivingStrategies
+    GeneralizedNewtypeDeriving
+    ImportQualifiedPost
+    LambdaCase
+    OverloadedStrings
+    RankNTypes
+    TypeApplications
+
+  default-language:   Haskell2010
+  ghc-options:
+    -Weverything -Werror -Wno-all-missed-specialisations
+    -Wno-missed-specialisations -Wno-prepositive-qualified-module
+    -Wno-missing-export-lists -Wno-missing-import-lists
+    -Wno-missing-local-signatures -Wno-monomorphism-restriction
+    -Wno-safe -Wno-unsafe -fno-show-valid-hole-fits
+    -Wno-missing-safe-haskell-mode -Wno-implicit-prelude
+    -Wno-missing-kind-signatures -Wprepositive-qualified-module
+
 library
-    default-extensions:
-        BangPatterns
-        BlockArguments
-        ConstraintKinds
-        DataKinds
-        DeriveAnyClass
-        DeriveFunctor
-        DeriveGeneric
-        DerivingStrategies
-        DerivingVia
-        DuplicateRecordFields
-        FlexibleContexts
-        FlexibleInstances
-        FunctionalDependencies
-        GeneralizedNewtypeDeriving
-        ImportQualifiedPost
-        LambdaCase
-        MultiParamTypeClasses
-        MultiWayIf
-        NamedFieldPuns
-        OverloadedLabels
-        OverloadedStrings
-        RankNTypes
-        RecordWildCards
-        ScopedTypeVariables
-        StandaloneDeriving
-        StrictData
-        TupleSections
-        TypeApplications
-        TypeFamilies
-        TypeOperators
-        UndecidableInstances
+  import:          common
+  hs-source-dirs:  src
+  exposed-modules:
+    Data.JsonPointer
+    Data.JsonPointer.Aeson
+    Data.JsonPointer.Model
+    Data.JsonPointer.OpenApi
+    Data.JsonPointer.Parser
 
-    default-language:   Haskell2010
+  build-depends:
+    , aeson
+    , attoparsec
+    , base
+    , openapi3
+    , text
+    , vector
 
-    ghc-options:
-        -Weverything -Werror -Wno-all-missed-specialisations
-        -Wno-missed-specialisations -Wno-prepositive-qualified-module
-        -Wno-missing-export-lists -Wno-missing-import-lists
-        -Wno-missing-local-signatures -Wno-monomorphism-restriction
-        -Wno-safe -Wno-unsafe -fno-show-valid-hole-fits
-        -Wno-missing-safe-haskell-mode -Wno-implicit-prelude
-        -Wno-missing-kind-signatures
-        -Wprepositive-qualified-module
+test-suite spec
+  import:             common
+  type:               exitcode-stdio-1.0
+  hs-source-dirs:     test
+  main-is:            Spec.hs
+  other-modules:
+    Data.JsonPointer.AesonSpec
+    Data.JsonPointer.Gen
+    Data.JsonPointer.ModelSpec
+    Data.JsonPointer.ParserSpec
 
-    hs-source-dirs:  src
-    exposed-modules:
-        JSONPointer.Aeson
-        JSONPointer.Model
-        JSONPointer.Parser
-
-    build-depends:
-        , aeson
-        , attoparsec
-        , base
-        , text
-        , vector
+  build-tool-depends: hspec-discover:hspec-discover
+  build-depends:
+    , aeson
+    , base
+    , containers
+    , hspec
+    , json-pointer
+    , QuickCheck
+    , text
